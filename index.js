@@ -49,7 +49,7 @@ let neighborFive = {
 
 
 
-let inputAddress = '';
+let inputAddress = '3058 spuraway avenue';
 let queryInput = utils.addPlus(inputAddress);
 let scrapedUrl = '';
 
@@ -82,13 +82,12 @@ let optionsThree = {
 
 https.request(optionsOne, (res) =>{
   console.log("atleast it sent");
-  // res.on("data", (chunk) => {
-  //   console.log("this is the body" + chunk);
+   res.on("data", (chunk) => {
+     console.log("this is the body" + chunk);
   //   let rawURL = "whatever the href to listing page is"
   //   scrapedUrlPath = do shit to rawURL with util
-  // });
+   });
   console.log(res.statusCode);
-  console.log(res.headers);
   console.log("completed");
 }).end();
 
