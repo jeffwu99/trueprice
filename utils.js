@@ -5,6 +5,14 @@ exports.addPlus = function(string) {
   return string.replace(/ /g, "+")
 }
 
+// addHyphen(string) -> string
+// replaces " " with "-" in a string.
+exports.addHyphen = function(string) {
+  return string.replace(/ /g, "-")
+}
+
+
+
 // findCorrectUrl(string, string, instance) -> string
 // given html response IN STRING, finds and returns desired url 
 // stringOne is search criteria
