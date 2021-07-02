@@ -11,15 +11,26 @@ exports.addHyphen = function(string) {
   return string.replace(/ /g, "-")
 }
 
+// capitalizeAddress(string) -> string
+// capitalizes the first letter of each word of the address
+let capitalizeIt = exports.capitalizeAddress = function(string) {
+  let arr = string.split(" ");
+  for (let i=0; i<arr.length; i++) {
+    arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].slice(1);
+  }
+  return arr.join(" ")
+}
 
-
-// findCorrectUrl(string, string, instance) -> string
-// given html response IN STRING, finds and returns desired url 
-// stringOne is search criteria
-// stringTwo is html
-// instance is natural number of which occurence of stringOne is wanted
-exports.findCorrectUrl = function(stringOne, stringTwo, instance) {
-  return "wip"
+// findCorrectUrl(string, string) -> string
+// given html response IN STRING, finds and returns desired url path
+// stringOne is search criteria (with spaces)
+// stringTwo is html response
+exports.findCorrectUrl = function(stringOne, stringTwo) {
+  let capitalized = capitalizeIt(stringOne);
+  let startLine = stringTwo.indexOf('title="' + capitalized);
+  let pathBegin = stringTwo.indexOf('/', startLine);
+  let pathEnd = stringTwo.indexOf('"', pathBegin);
+  return stringTwo.substring(pathBegin, pathEnd)
 }
 
 // classSearcher(string, boolean) -> string OR object
