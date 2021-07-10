@@ -22,6 +22,7 @@ let capitalizeIt = exports.capitalizeAddress = function(string) {
 }
 
 // findCorrectUrl(string, string) -> string
+// ONLY Use this function for finding input address url from the initial get request
 // given html response IN STRING, finds and returns desired url path
 // stringOne is search criteria (with spaces)
 // stringTwo is html response
@@ -31,6 +32,19 @@ exports.findCorrectUrl = function(stringOne, stringTwo) {
   let pathBegin = stringTwo.indexOf('/', startLine);
   let pathEnd = stringTwo.indexOf('"', pathBegin);
   return stringTwo.substring(pathBegin, pathEnd)
+}
+
+
+// findPropertyInsightsUrl(string) -> string
+// ONLY use this function for finding the url for property insights of a specific listing on REW
+// given html response IN STRING, finds and returns desired url
+// htmlRes is html response
+exports.findPropertyInsightsUrl = function(htmlRes) {
+  let stringMarker = 'data-ga-tracking="propertyInsightsClick"';
+  let startLine = htmlRes.indexOf(stringMarker);
+  let hrefBegin = htmlRes.indexOf('/insights/', startLine);
+  let hrefEnd = htmlRes.indexOf('">', hrefBegin);
+  return htmlRes.substring(hrefBegin, hrefEnd)
 }
 
 // classSearcher(string, boolean) -> string OR object
