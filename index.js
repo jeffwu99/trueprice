@@ -1,7 +1,7 @@
+const { SIGCHLD } = require('constants');
 const https = require('https');
 const utils = require('./utils');
 const REWQUERYPATH = '/properties/search/results?initial_search_method=single_field&query='
-
 
 //Various scraped data here:
 let inputAddressData = {
@@ -47,12 +47,9 @@ let neighborFive = {
   yearRenovated: 0,  //this will be updated to yearBuilt if no renovations were made
 }
 
-
-
 let inputAddress = '3058 spuraway avenue'; //as example
 let queryInput = utils.addPlus(inputAddress);
 let body = ''; //will be clearing this in every get request and refilling
-let scrapedUrlPath = '';
 
 //optionsOne is first request to GET the url of address page
 let optionsOne = {
@@ -64,74 +61,102 @@ let optionsOne = {
   }
 }
 
-//optionsTwo is actual request to url of listing & full data
-let optionsTwo = {
-  hostname: 'www.rew.ca',
-  method: 'GET',
-  path: scrapedUrlPath,
-  headers: {
-    'User-Agent': 'PostmanRuntime/7.28.0'
-  }
-}
-
-//optionsThree is  request to url of REW listing's insights data 
-let optionsThree = {
-  method: 'GET',
-  headers: {
-    'User-Agent': 'PostmanRuntime/7.28.0'
-  }
-}
-
 //first get request
 function getUrl(optionsOne) {
   return new Promise((resolve, reject) => {
     https.request(optionsOne, (res) =>{
-      if (res.statusCode < 200 || res.statusCode > 300) {
-        reject("error in first request, status " + res.statusCode);
-      }
       res.on('data', (chunk) => {
         body += chunk;
       });
       res.on('end', () => {
-        scrapedUrlPath = utils.findCorrectUrl(inputAddress, body);
-        resolve(scrapedUrlPath);
+        resolve(utils.findCorrectUrl(inputAddress, body));
       });
-      console.log(res.statusCode);
-    }).end();
-  })
-}
+      console.log("first status code: " + res.statusCode);
+    })
+    .end()
+    .on('error', (err) => {reject(err)});
+    })
+    .catch((err) => {
+      console.log(err);
+      console.log("first request errored");
+    });
+  }
 
 //second get request
 function getInputInfo(optionsTwo) {
   return new Promise((resolve, reject) => {
     https.request(optionsTwo, (res) => {
-      body = ''; //resetting body variable from last request
-      if (res.statusCode < 200 || res.statusCode > 300) {
-        reject("error in first request, status " + res.statusCode);
-      }
       res.on('data', (chunk) => {
         body += chunk;
       });
       res.on('end', () => {
-        resolve(body);
-        //do something with full data
-        //probs need that classSearcher function
+        resolve(utils.findPropertyInsightsUrl(body));
+        //classSearcher function
+        //missing resolve()
       })
-    }).end();
+      console.log("second status code: " + res.statusCode);
+    })
+    .end()
+    .on('error', (err) => {reject(err)});
   })
+  .catch((err) => {
+    console.log(err);
+    console.log("second request errored");
+  });
 }
 
+//third get request
+function getPropertyInsights(optionsThree) {
+  return new Promise((resolve, reject) => {
+    https.request(optionsThree, (res) => {
+      body = ''; //resetting body variable from last request
+      res.on('data', (chunk) => {
+        body += chunk
+      });
+      res.on('end', () => {
+        console.log(body.match(/data-login-link/g))
+      })
+      console.log("third status code: " + res.statusCode);
+      resolve("42");
+    })
+    .end()
+    .on('error', (err) => {reject(err)});
+  })
+  .catch((err) => {
+    console.log(err);
+    console.log("third request errored");
+  });
+}
 
 async function execute() {
-  var resp = await getUrl(optionsOne);
-  console.log(resp);
-  var respTwo = await getInputInfo(optionsTwo);
-  console.log(respTwo);
+  var resolvedUrl = await getUrl(optionsOne);  
+  body = ''; //clearing body variable here
+
+  //second request options
+  let optionsTwo = {
+    hostname: 'www.rew.ca',
+    method: 'GET',
+    path: resolvedUrl, //variable
+    headers: {
+      'User-Agent': 'PostmanRuntime/7.28.0'
+      }
+  };
+  ResolvedUrl = await getInputInfo(optionsTwo);
+  body = ''; //clearing body variable here
+
+  //third request options
+  let optionsThree = {
+    hostname: 'www.rew.ca',
+    method: 'GET',
+    path: ResolvedUrl,
+    headers: {
+      'User-Agent': 'PostmanRuntime/7.28.0'
+    }
+  }
+  var respThree = await getPropertyInsights(optionsThree);
+  console.log(respThree);
 }
 
 execute()
-
-const endOne = '';
-const endTwo = '';
 
 console.log("hello");
