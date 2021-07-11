@@ -90,9 +90,9 @@ function getInputInfo(optionsTwo) {
         body += chunk;
       });
       res.on('end', () => {
+        let priceVar = utils.classSearcher(body,'sqft');
+        console.log(priceVar);
         resolve(utils.findPropertyInsightsUrl(body));
-        //classSearcher function
-        //missing resolve()
       })
       console.log("second status code: " + res.statusCode);
     })
@@ -153,9 +153,11 @@ async function execute() {
       'User-Agent': 'PostmanRuntime/7.28.0'
     }
   }
+
   var respThree = await getPropertyInsights(optionsThree);
   console.log(respThree);
 }
+
 
 execute()
 
