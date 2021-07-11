@@ -49,9 +49,10 @@ let neighborFive = {
 
 
 
-let inputAddress = '3058 spuraway avenue';
+let inputAddress = '3058 spuraway avenue'; //as example
 let queryInput = utils.addPlus(inputAddress);
-let scrapedUrl = '';
+let body = ''; //will be clearing this in every get request and refilling
+let scrapedUrlPath = '';
 
 //optionsOne is first request to GET the url of address page
 let optionsOne = {
@@ -59,17 +60,11 @@ let optionsOne = {
   method: 'GET',
   path: REWQUERYPATH.concat(queryInput),
   headers: {
-    'User-Agent': 'PostmanRuntime/7.28.0'
+   'User-Agent': 'PostmanRuntime/7.28.0'
   }
 }
 
 //optionsTwo is actual request to url of listing & full data
-let optionsTwo = {
-  method: 'GET',
-  headers: {
-    'User-Agent': 'PostmanRuntime/7.28.0'
-  }
-}
 
 //optionsThree is  request to url of REW listing's insights data 
 let optionsThree = {
@@ -79,22 +74,65 @@ let optionsThree = {
   }
 }
 
+//first get request
+function getUrl(optionsOne) {
+  return new Promise((resolve, reject) => {
+    https.request(optionsOne, (res) =>{
+      if (res.statusCode < 200 || res.statusCode > 300) {
+        reject("error in first request, status " + res.statusCode);
+      }
+      res.on('data', (chunk) => {
+        body += chunk;
+      });
+      res.on('end', () => {
+        scrapedUrlPath = utils.findCorrectUrl(inputAddress, body);
+        resolve(scrapedUrlPath);
+      });
+      console.log(res.statusCode);
+    }).end();
+  })
+}
 
-https.request(optionsOne, (res) =>{
-  console.log("atleast it sent");
-   res.on("data", (chunk) => {
-     console.log("this is the body" + chunk);
-  //   let rawURL = "whatever the href to listing page is"
-  //   scrapedUrlPath = do shit to rawURL with util
-   });
-  console.log(res.statusCode);
-  console.log("completed");
-}).end();
+//second get request
+function getInputInfo(optionsTwo) {
+  return new Promise((resolve, reject) => {
+    https.request(optionsTwo, (res) => {
+      body = ''; //resetting body variable from last request
+      if (res.statusCode < 200 || res.statusCode > 300) {
+        reject("error in first request, status " + res.statusCode);
+      }
+      res.on('data', (chunk) => {
+        body += chunk;
+      });
+      res.on('end', () => {
+        //resolve(body);
+        //do something with full data
+       let priceVar = utils.classSearcher(body,'sqft');
+       console.log(priceVar);
+      })
+    }).end();
+  })
+}
 
 
-let responseResults = []; //parsed responce object stored here
+async function execute() {
+  var resp = await getUrl(optionsOne);
+  let optionsTwo = {
+    hostname: 'www.rew.ca',
+    method: 'GET',
+    path: resp,
+    headers: {
+      'User-Agent': 'PostmanRuntime/7.28.0'
+    }
+  }
+  console.log(resp);
+  var respTwo = await getInputInfo(optionsTwo);
+  console.log(respTwo);
+}
+
+execute()
+
 const endOne = '';
 const endTwo = '';
 
 console.log("hello");
-
