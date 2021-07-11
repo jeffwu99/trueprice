@@ -45,14 +45,67 @@ exports.findPropertyInsightsUrl = function(htmlRes) {
   let hrefBegin = htmlRes.indexOf('/insights/', startLine);
   let hrefEnd = htmlRes.indexOf('">', hrefBegin);
   return htmlRes.substring(hrefBegin, hrefEnd)
+
 }
 
 // classSearcher(string, boolean) -> string OR object
 // Searches for a tag with class with matching name as input string. 
 // Returns a string if boolean is false.
 // Returns an object if boolean is true.
-exports.classSearcher = function(string, bool) {
-  return "wip"
+// switch case
+exports.classSearcher = function(htmlRes, desire_field) {
+  //use switch statements.
+  // let stringMarker = '';
+  // let startLine = 
+  // switch(desire_field){
+  //   case 'price': 
+  //     let stringMarker = '"listingheader-price"';
+  //     let startLine = htmlRes.indexOf(stringMarker);
+  //     let beginIndex = htmlRes.indexOf('">', startLine) + 3;
+  //     let endIndex = htmlRes.indexOf('</div>',beginIndex)
+  //     let priceString = htmlRes.substring(beginIndex, endIndex);
+  //     return parseFloat(priceString.replace(/,/g, ''));
+    
+  //   case 'sqft':
+  //     let stringMarker = 'class="listingheader-details l-pipedlist">';
+  //     let startLine = htmlRes.indexOf(stringMarker);
+  //     let beginIndex = htmlRes.indexOf(' Bath</li>\n<li>', startLine) + 15;
+  //     let endIndex = htmlRes.indexOf('Sqft<', startLine);
+  //     let sqftString = htmlRes.substring(beginIndex, endIndex);
+  //     return parseFloat(sqftString, 10);
+
+  // }
+  if (desire_field == 'price'){
+    let stringMarker = '"listingheader-price"';
+    let startLine = htmlRes.indexOf(stringMarker);
+    let beginIndex = htmlRes.indexOf('">', startLine) + 3;
+    let endIndex = htmlRes.indexOf('</div>',beginIndex)
+    let priceString = htmlRes.substring(beginIndex, endIndex);
+    return parseFloat(priceString.replace(/,/g, ''));
+
+  }
+  if (desire_field == 'sqft'){
+    let stringMarker = 'class="listingheader-details l-pipedlist">';
+    let startLine = htmlRes.indexOf(stringMarker);
+    let beginIndex = htmlRes.indexOf(' Bath</li>\n<li>', startLine) + 15;
+    let endIndex = htmlRes.indexOf('Sqft<', startLine);
+    let sqftString = htmlRes.substring(beginIndex, endIndex);
+    return parseFloat(sqftString, 10);
+  }
+  if (desire_field == 'bedrooms'){
+    let stringMarker = 'class="listingheader-details l-pipedlist">';
+    let startLine = htmlRes.indexOf(stringMarker);
+    let beginIndex = htmlRes.indexOf('<li>', startLine) + 4;
+    let endIndex = htmlRes.indexOf('Bed</li>', startLine);
+    return htmlRes.substring(beginIndex, endIndex);
+  }
+  if (desire_field == 'bathrooms'){
+    let stringMarker = 'class="listingheader-details l-pipedlist">';
+    let startLine = htmlRes.indexOf(stringMarker);
+    let beginIndex = htmlRes.indexOf('Bed</li>\n<li>', startLine) + 13;
+    let endIndex = htmlRes.indexOf('Bath<', beginIndex);
+    return htmlRes.substring(beginIndex, endIndex);
+  }
 }
 
 // idSearcher(string, boolean) -> string OR object
