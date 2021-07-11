@@ -34,7 +34,6 @@ exports.findCorrectUrl = function(stringOne, stringTwo) {
   return stringTwo.substring(pathBegin, pathEnd)
 }
 
-
 // findPropertyInsightsUrl(string) -> string
 // ONLY use this function for finding the url for property insights of a specific listing on REW
 // given html response IN STRING, finds and returns desired url

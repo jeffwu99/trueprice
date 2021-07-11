@@ -114,7 +114,7 @@ function getPropertyInsights(optionsThree) {
         body += chunk
       });
       res.on('end', () => {
-        console.log(body.match(/data-login-link/g))
+        console.log(body.match(/data-login-link/g));
       })
       console.log("third status code: " + res.statusCode);
       resolve("42");
