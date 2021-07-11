@@ -42,9 +42,9 @@ exports.findCorrectUrl = function(stringOne, stringTwo) {
 exports.findPropertyInsightsUrl = function(htmlRes) {
   let stringMarker = 'data-ga-tracking="propertyInsightsClick"';
   let startLine = htmlRes.indexOf(stringMarker);
-  let hrefBegin = htmlRes.indexOf('href="', startLine) + 6; //add 6 indexOf starts at 'h' and has 6 additional characters before url
+  let hrefBegin = htmlRes.indexOf('/insights/', startLine);
   let hrefEnd = htmlRes.indexOf('">', hrefBegin);
-  return htmlRes.substring(hrefBegin, hrefEnd);
+  return htmlRes.substring(hrefBegin, hrefEnd)
 
 }
 
