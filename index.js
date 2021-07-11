@@ -64,16 +64,6 @@ let optionsOne = {
   }
 }
 
-//optionsTwo is actual request to url of listing & full data
-let optionsTwo = {
-  hostname: 'www.rew.ca',
-  method: 'GET',
-  path: scrapedUrlPath,
-  headers: {
-    'User-Agent': 'PostmanRuntime/7.28.0'
-  }
-}
-
 //optionsThree is  request to url of REW listing's insights data 
 let optionsThree = {
   method: 'GET',
@@ -113,9 +103,10 @@ function getInputInfo(optionsTwo) {
         body += chunk;
       });
       res.on('end', () => {
-        resolve(body);
+        //resolve(body);
         //do something with full data
-        //probs need that classSearcher function
+       let priceVar = utils.classSearcher(body,'sqft');
+       console.log(priceVar);
       })
     }).end();
   })
@@ -124,10 +115,16 @@ function getInputInfo(optionsTwo) {
 
 async function execute() {
   var resp = await getUrl(optionsOne);
-  console.log(resp);
-  var respTwo = await getInputInfo(optionsTwo);
-  console.log(respTwo);
-}
+  let optionsTwo = {
+    hostname: 'www.rew.ca',
+    method: 'GET',
+    path: resp,
+    headers: {
+      'User-Agent': 'PostmanRuntime/7.28.0'
+    }
+  }
+
+
 
 execute()
 
