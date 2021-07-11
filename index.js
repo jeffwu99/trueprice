@@ -64,8 +64,6 @@ let optionsOne = {
   }
 }
 
-//optionsTwo is actual request to url of listing & full data
-
 //optionsThree is  request to url of REW listing's insights data 
 let optionsThree = {
   method: 'GET',
@@ -125,10 +123,8 @@ async function execute() {
       'User-Agent': 'PostmanRuntime/7.28.0'
     }
   }
-  console.log(resp);
-  var respTwo = await getInputInfo(optionsTwo);
-  console.log(respTwo);
-}
+
+
 
 execute()
 

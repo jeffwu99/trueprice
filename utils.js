@@ -45,6 +45,7 @@ exports.findPropertyInsightsUrl = function(htmlRes) {
   let hrefBegin = htmlRes.indexOf('href="', startLine) + 6; //add 6 indexOf starts at 'h' and has 6 additional characters before url
   let hrefEnd = htmlRes.indexOf('">', hrefBegin);
   return htmlRes.substring(hrefBegin, hrefEnd);
+
 }
 
 // classSearcher(string, boolean) -> string OR object
