@@ -53,57 +53,46 @@ exports.findPropertyInsightsUrl = function(htmlRes) {
 // Returns an object if boolean is true.
 // switch case
 exports.classSearcher = function(htmlRes, desire_field) {
-  //use switch statements.
-  // let stringMarker = '';
-  // let startLine = 
-  // switch(desire_field){
-  //   case 'price': 
-  //     let stringMarker = '"listingheader-price"';
-  //     let startLine = htmlRes.indexOf(stringMarker);
-  //     let beginIndex = htmlRes.indexOf('">', startLine) + 3;
-  //     let endIndex = htmlRes.indexOf('</div>',beginIndex)
-  //     let priceString = htmlRes.substring(beginIndex, endIndex);
-  //     return parseFloat(priceString.replace(/,/g, ''));
+  let stringMarker = '';
+  let startLine = '';
+  let beginIndex = '';
+  let endIndex = '';
+  let desiredString = '';
+  switch(desire_field){
+    case 'price': 
+      stringMarker = '"listingheader-price"';
+      startLine = htmlRes.indexOf(stringMarker);
+      beginIndex = htmlRes.indexOf('">', startLine) + 3;
+      endIndex = htmlRes.indexOf('</div>',beginIndex)
+      desiredString = htmlRes.substring(beginIndex, endIndex);
+      return parseFloat(desiredString.replace(/,/g, ''));
     
-  //   case 'sqft':
-  //     let stringMarker = 'class="listingheader-details l-pipedlist">';
-  //     let startLine = htmlRes.indexOf(stringMarker);
-  //     let beginIndex = htmlRes.indexOf(' Bath</li>\n<li>', startLine) + 15;
-  //     let endIndex = htmlRes.indexOf('Sqft<', startLine);
-  //     let sqftString = htmlRes.substring(beginIndex, endIndex);
-  //     return parseFloat(sqftString, 10);
+    case 'sqft':
+      stringMarker = 'class="listingheader-details l-pipedlist">';
+      startLine = htmlRes.indexOf(stringMarker);
+      beginIndex = htmlRes.indexOf(' Bath</li>\n<li>', startLine) + 15;
+      endIndex = htmlRes.indexOf('Sqft<', startLine);
+      desiredString = htmlRes.substring(beginIndex, endIndex);
+      return parseFloat(desiredString, 10);
 
-  // }
-  if (desire_field == 'price'){
-    let stringMarker = '"listingheader-price"';
-    let startLine = htmlRes.indexOf(stringMarker);
-    let beginIndex = htmlRes.indexOf('">', startLine) + 3;
-    let endIndex = htmlRes.indexOf('</div>',beginIndex)
-    let priceString = htmlRes.substring(beginIndex, endIndex);
-    return parseFloat(priceString.replace(/,/g, ''));
+    case 'bedrooms':
+      stringMarker = 'class="listingheader-details l-pipedlist">';
+      startLine = htmlRes.indexOf(stringMarker);
+      beginIndex = htmlRes.indexOf('<li>', startLine) + 4;
+      endIndex = htmlRes.indexOf('Bed</li>', startLine);
+      desiredString = htmlRes.substring(beginIndex, endIndex);
+      return parseFloat(desiredString, 10);
 
-  }
-  if (desire_field == 'sqft'){
-    let stringMarker = 'class="listingheader-details l-pipedlist">';
-    let startLine = htmlRes.indexOf(stringMarker);
-    let beginIndex = htmlRes.indexOf(' Bath</li>\n<li>', startLine) + 15;
-    let endIndex = htmlRes.indexOf('Sqft<', startLine);
-    let sqftString = htmlRes.substring(beginIndex, endIndex);
-    return parseFloat(sqftString, 10);
-  }
-  if (desire_field == 'bedrooms'){
-    let stringMarker = 'class="listingheader-details l-pipedlist">';
-    let startLine = htmlRes.indexOf(stringMarker);
-    let beginIndex = htmlRes.indexOf('<li>', startLine) + 4;
-    let endIndex = htmlRes.indexOf('Bed</li>', startLine);
-    return htmlRes.substring(beginIndex, endIndex);
-  }
-  if (desire_field == 'bathrooms'){
-    let stringMarker = 'class="listingheader-details l-pipedlist">';
-    let startLine = htmlRes.indexOf(stringMarker);
-    let beginIndex = htmlRes.indexOf('Bed</li>\n<li>', startLine) + 13;
-    let endIndex = htmlRes.indexOf('Bath<', beginIndex);
-    return htmlRes.substring(beginIndex, endIndex);
+    case 'bathrooms':
+      stringMarker = 'class="listingheader-details l-pipedlist">';
+      startLine = htmlRes.indexOf(stringMarker);
+      beginIndex = htmlRes.indexOf('Bed</li>\n<li>', startLine) + 13;
+      endIndex = htmlRes.indexOf('Bath<', beginIndex);
+      desiredString = htmlRes.substring(beginIndex, endIndex);
+      return parseFloat(desiredString, 10);
+    
+    default:
+      console.log('error: must specify in second argument the desired_field:\n"price"\n"sqft"\n"bedrooms"\n"bathrooms"')
   }
 }
 
