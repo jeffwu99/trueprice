@@ -97,6 +97,9 @@ exports.classSearcher = function(htmlRes, desire_field) {
 // htmlRes is the html response of the body
 // range is the distance in kilometers from input address to a neighboring house 
 exports.scrapeSoldData = function(htmlRes, range) {
+  let iterations = htmlRes.match(/previewcard previewcard--sold/g).length;
+  if (iterations == null) 
+    return "No sold data to be viewed at this time."
   let stringMarker = 'previewcard previewcard--sold';
   let startLine = htmlRes.indexOf(stringMarker);
   let beginIndex = 0;
@@ -106,42 +109,45 @@ exports.scrapeSoldData = function(htmlRes, range) {
   let endRangeIndex = 0;
   let distance = 0;
 
-  //implement a while loop for neighboring houses
-
-
-  rangeIndex = htmlRes.indexOf('Distance', startLine) + 15;
-  endRangeIndex = htmlRes.indexOf('</span>', rangeIndex);
-  distance = parseFloat(htmlRes.substring(rangeIndex, endRangeIndex));
-  console.log(distance);
-
-  if (range >= distance) {
-    //parsing through the unordered list for list items must be done in this order
-    //should store in object
-    beginIndex = htmlRes.indexOf('class="previewcard-title">$', startLine) + 27;
-    endIndex = htmlRes.indexOf('</div>', beginIndex);
-    desiredString = htmlRes.substring(beginIndex, endIndex);
-    console.log(parseFloat(desiredString.replace(/,/g, ''))); //sold price obtained
-
-    beginIndex = htmlRes.indexOf('<li>', beginIndex) + 4;
-    endIndex = htmlRes.indexOf('bd</li>', beginIndex);
-    console.log(Number(htmlRes.substring(beginIndex, endIndex))); //bedrooms obtained
-
-    beginIndex = htmlRes.indexOf('<li>', endIndex) + 4;
-    endIndex = htmlRes.indexOf('ba</li>', beginIndex);
-    console.log(Number(htmlRes.substring(beginIndex, endIndex))); //bathrooms obtained
-
-    beginIndex = htmlRes.indexOf('<li>', endIndex) + 4;
-    endIndex = htmlRes.indexOf('</li>', beginIndex);
-    console.log(parseFloat(htmlRes.substring(beginIndex, endIndex))); //sqft obtained
+  let neighbors = {
+    price: [],
+    bedrooms: [],
+    bathrooms: [],
+    floorSpace: [],
   }
 
-}
+  for(let i=0; i<iterations; i++) {
+    rangeIndex = htmlRes.indexOf('Distance', startLine) + 15;
+    endRangeIndex = htmlRes.indexOf('</span>', rangeIndex);
+    distance = parseFloat(htmlRes.substring(rangeIndex, endRangeIndex));
+    console.log(distance);
 
+    if (range >= distance) {
+      //parsing through the unordered list for list items must be done in this order
+      //should store in object
+      beginIndex = htmlRes.indexOf('class="previewcard-title">$', startLine) + 27;
+      endIndex = htmlRes.indexOf('</div>', beginIndex);
+      desiredString = htmlRes.substring(beginIndex, endIndex);
+      console.log(parseFloat(desiredString.replace(/,/g, ''))); //sold price obtained
+      neighbors.price[i] = parseFloat(desiredString.replace(/,/g, ''));
 
-// idSearcher(string, boolean) -> string OR object
-// Searches for a tag id with matching name as input string. 
-// Returns a string if boolean is false.
-// Returns an object if boolean is true.
-exports.idSearcher = function(string, bool) {
-  return "wip"
+      beginIndex = htmlRes.indexOf('<li>', beginIndex) + 4;
+      endIndex = htmlRes.indexOf('bd</li>', beginIndex);
+      console.log(Number(htmlRes.substring(beginIndex, endIndex))); //bedrooms obtained
+      neighbors.bedrooms[i] = Number(htmlRes.substring(beginIndex, endIndex));
+
+      beginIndex = htmlRes.indexOf('<li>', endIndex) + 4;
+      endIndex = htmlRes.indexOf('ba</li>', beginIndex);
+      console.log(Number(htmlRes.substring(beginIndex, endIndex))); //bathrooms obtained
+      neighbors.bathrooms[i] = Number(htmlRes.substring(beginIndex, endIndex));
+
+      beginIndex = htmlRes.indexOf('<li>', endIndex) + 4;
+      endIndex = htmlRes.indexOf('</li>', beginIndex);
+      console.log(parseFloat(htmlRes.substring(beginIndex, endIndex))); //sqft obtained
+      neighbors.floorSpace[i] = parseFloat(htmlRes.substring(beginIndex, endIndex));
+    }
+
+    startLine = htmlRes.indexOf(stringMarker, endRangeIndex) //this increments to the next occurence of stringMarker
+  }
+  console.log(neighbors)
 }
