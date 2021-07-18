@@ -8,55 +8,7 @@ let inputAddressData = {
   listingPrice: 0,
   bedrooms: 0,
   bathrooms: 0,
-  floorSpace: 0,
-  lotSize: 0,
-  yearBuilt: 0,
-  yearRenovated: 0,  //this will be updated to yearBuilt if no renovations were made
-}
-let neighborOne = {
-  soldPrice: 0,
-  bedrooms: 0,
-  bathrooms: 0,
-  floorSpace: 0,
-  lotSize: 0,
-  yearBuilt: 0,
-  yearRenovated: 0,  //this will be updated to yearBuilt if no renovations were made
-}
-let neighborTwo = {
-  soldPrice: 0,
-  bedrooms: 0,
-  bathrooms: 0,
-  floorSpace: 0,
-  lotSize: 0,
-  yearBuilt: 0,
-  yearRenovated: 0,  //this will be updated to yearBuilt if no renovations were made
-}
-let neighborThree = {
-  soldPrice: 0,
-  bedrooms: 0,
-  bathrooms: 0,
-  floorSpace: 0,
-  lotSize: 0,
-  yearBuilt: 0,
-  yearRenovated: 0,  //this will be updated to yearBuilt if no renovations were made
-}
-let neighborFour = {
-  soldPrice: 0,
-  bedrooms: 0,
-  bathrooms: 0,
-  floorSpace: 0,
-  lotSize: 0,
-  yearBuilt: 0,
-  yearRenovated: 0,  //this will be updated to yearBuilt if no renovations were made
-}
-let neighborFive = {
-  soldPrice: 0,
-  bedrooms: 0,
-  bathrooms: 0,
-  floorSpace: 0,
-  lotSize: 0,
-  yearBuilt: 0,
-  yearRenovated: 0,  //this will be updated to yearBuilt if no renovations were made
+  floorSpace: 0  //will need to add lotSize, yearbuilt, yearrenovated
 }
 
 let inputAddress = '3058 spuraway avenue'; //as example
@@ -129,10 +81,10 @@ function getPropertyInsights(optionsThree) {
         body += chunk
       });
       res.on('end', () => {
-        utils.scrapeSoldData(body, NEIGHBORMAXDIST);
+        const {price, bedrooms, bathrooms, floorSpace} = utils.scrapeSoldData(body, NEIGHBORMAXDIST);
+        resolve(utils.algorithm(price, bedrooms, bathrooms, floorSpace, inputAddressData));
       })
       console.log("third status code: " + res.statusCode);
-      resolve("42");
     })
     .end()
     .on('error', (err) => {reject(err)});
