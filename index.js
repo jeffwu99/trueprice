@@ -60,6 +60,7 @@ let neighborFive = {
 }
 
 let inputAddress = '3058 spuraway avenue'; //as example
+const NEIGHBORMAXDIST = 5;
 let queryInput = utils.addPlus(inputAddress);
 let body = ''; //will be clearing this in every get request and refilling
 
@@ -106,7 +107,6 @@ function getInputInfo(optionsTwo) {
         inputAddressData.floorSpace = utils.classSearcher(body, 'sqft');
         inputAddressData.bedrooms = utils.classSearcher(body, 'bedrooms');
         inputAddressData.bathrooms = utils.classSearcher(body, 'bathrooms');
-        console.log(inputAddressData);
         resolve(utils.findPropertyInsightsUrl(body));
       })
       console.log("second status code: " + res.statusCode);
@@ -129,7 +129,7 @@ function getPropertyInsights(optionsThree) {
         body += chunk
       });
       res.on('end', () => {
-        console.log(body.match(/data-login-link/g));
+        utils.scrapeSoldData(body, NEIGHBORMAXDIST);
       })
       console.log("third status code: " + res.statusCode);
       resolve("42");
