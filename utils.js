@@ -113,14 +113,13 @@ exports.scrapeSoldData = function(htmlRes, range) {
     price: [],
     bedrooms: [],
     bathrooms: [],
-    floorSpace: [],
+    floorSpace: []
   }
 
   for(let i=0; i<iterations; i++) {
     rangeIndex = htmlRes.indexOf('Distance', startLine) + 15;
     endRangeIndex = htmlRes.indexOf('</span>', rangeIndex);
     distance = parseFloat(htmlRes.substring(rangeIndex, endRangeIndex));
-    console.log(distance);
 
     if (range >= distance) {
       //parsing through the unordered list for list items must be done in this order
@@ -128,26 +127,56 @@ exports.scrapeSoldData = function(htmlRes, range) {
       beginIndex = htmlRes.indexOf('class="previewcard-title">$', startLine) + 27;
       endIndex = htmlRes.indexOf('</div>', beginIndex);
       desiredString = htmlRes.substring(beginIndex, endIndex);
-      console.log(parseFloat(desiredString.replace(/,/g, ''))); //sold price obtained
-      neighbors.price[i] = parseFloat(desiredString.replace(/,/g, ''));
+      neighbors.price[i] = parseFloat(desiredString.replace(/,/g, '')); //sold price obtained
 
       beginIndex = htmlRes.indexOf('<li>', beginIndex) + 4;
       endIndex = htmlRes.indexOf('bd</li>', beginIndex);
-      console.log(Number(htmlRes.substring(beginIndex, endIndex))); //bedrooms obtained
-      neighbors.bedrooms[i] = Number(htmlRes.substring(beginIndex, endIndex));
+
+      neighbors.bedrooms[i] = Number(htmlRes.substring(beginIndex, endIndex)); //bedrooms obtained
 
       beginIndex = htmlRes.indexOf('<li>', endIndex) + 4;
       endIndex = htmlRes.indexOf('ba</li>', beginIndex);
-      console.log(Number(htmlRes.substring(beginIndex, endIndex))); //bathrooms obtained
-      neighbors.bathrooms[i] = Number(htmlRes.substring(beginIndex, endIndex));
+      neighbors.bathrooms[i] = Number(htmlRes.substring(beginIndex, endIndex)); //bathrooms obtained
 
       beginIndex = htmlRes.indexOf('<li>', endIndex) + 4;
       endIndex = htmlRes.indexOf('</li>', beginIndex);
-      console.log(parseFloat(htmlRes.substring(beginIndex, endIndex))); //sqft obtained
-      neighbors.floorSpace[i] = parseFloat(htmlRes.substring(beginIndex, endIndex));
+      neighbors.floorSpace[i] = parseFloat(htmlRes.substring(beginIndex, endIndex)); //sqft obtained
     }
 
     startLine = htmlRes.indexOf(stringMarker, endRangeIndex) //this increments to the next occurence of stringMarker
   }
-  console.log(neighbors)
+  return neighbors
+}
+
+exports.algorithm = function(price, bedrooms, bathrooms, floorSpace, inputAddressData) {
+  const WEIGHT = {
+    FLOOR: 0.5,
+    BATH: 0.2,
+    BED: 0.3
+  }
+  const PRICEPERDIFF = {
+    FLOOR: 681.4,
+    BATH: 25000,
+    BED: 50000
+  }
+
+  let sumPrice = 0;
+  let sumBed = 0;
+  let sumBath = 0;
+  let sumFloor = 0;
+
+  for (let i = 0; i<price.length; i++) {
+    sumPrice += price[i];
+    sumBed += bedrooms[i];
+    sumBath += bathrooms[i];
+    sumFloor += floorSpace[i];
+  }
+
+  var truePrice = 
+    (sumPrice/price.length) + 
+    (inputAddressData.bedrooms - (sumBed/bedrooms.length)) * PRICEPERDIFF.BED * WEIGHT.BED +
+    (inputAddressData.bathrooms - (sumBath/bathrooms.length)) * PRICEPERDIFF.BATH * WEIGHT.BATH + 
+    (inputAddressData.floorSpace - (sumFloor/floorSpace.length)) * PRICEPERDIFF.FLOOR * WEIGHT.FLOOR;
+
+  return truePrice
 }
