@@ -6,6 +6,8 @@ const REWQUERYPATH = '/properties/search/results?initial_search_method=single_fi
 //Various scraped data here:
 let inputAddressData = {
   listingPrice: 0,
+  bedrooms: 0,
+  bathrooms: 0,
   floorSpace: 0,
   lotSize: 0,
   yearBuilt: 0,
@@ -13,6 +15,8 @@ let inputAddressData = {
 }
 let neighborOne = {
   soldPrice: 0,
+  bedrooms: 0,
+  bathrooms: 0,
   floorSpace: 0,
   lotSize: 0,
   yearBuilt: 0,
@@ -20,6 +24,8 @@ let neighborOne = {
 }
 let neighborTwo = {
   soldPrice: 0,
+  bedrooms: 0,
+  bathrooms: 0,
   floorSpace: 0,
   lotSize: 0,
   yearBuilt: 0,
@@ -27,6 +33,8 @@ let neighborTwo = {
 }
 let neighborThree = {
   soldPrice: 0,
+  bedrooms: 0,
+  bathrooms: 0,
   floorSpace: 0,
   lotSize: 0,
   yearBuilt: 0,
@@ -34,6 +42,8 @@ let neighborThree = {
 }
 let neighborFour = {
   soldPrice: 0,
+  bedrooms: 0,
+  bathrooms: 0,
   floorSpace: 0,
   lotSize: 0,
   yearBuilt: 0,
@@ -41,6 +51,8 @@ let neighborFour = {
 }
 let neighborFive = {
   soldPrice: 0,
+  bedrooms: 0,
+  bathrooms: 0,
   floorSpace: 0,
   lotSize: 0,
   yearBuilt: 0,
@@ -48,6 +60,7 @@ let neighborFive = {
 }
 
 let inputAddress = '3058 spuraway avenue'; //as example
+const NEIGHBORMAXDIST = 5;
 let queryInput = utils.addPlus(inputAddress);
 let body = ''; //will be clearing this in every get request and refilling
 
@@ -90,8 +103,10 @@ function getInputInfo(optionsTwo) {
         body += chunk;
       });
       res.on('end', () => {
-        let priceVar = utils.classSearcher(body,'sqft');
-        console.log(priceVar);
+        inputAddressData.listingPrice = utils.classSearcher(body, 'price');
+        inputAddressData.floorSpace = utils.classSearcher(body, 'sqft');
+        inputAddressData.bedrooms = utils.classSearcher(body, 'bedrooms');
+        inputAddressData.bathrooms = utils.classSearcher(body, 'bathrooms');
         resolve(utils.findPropertyInsightsUrl(body));
       })
       console.log("second status code: " + res.statusCode);
@@ -114,7 +129,7 @@ function getPropertyInsights(optionsThree) {
         body += chunk
       });
       res.on('end', () => {
-        console.log(body.match(/data-login-link/g))
+        utils.scrapeSoldData(body, NEIGHBORMAXDIST);
       })
       console.log("third status code: " + res.statusCode);
       resolve("42");
